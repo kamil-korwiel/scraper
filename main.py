@@ -1,8 +1,11 @@
 import requests
+from crawler import Crawler
 
 def main():
-    r = requests.get('https://api.github.com/user', auth=('user', 'pass'))
-    [print(i) for i in r.__dir__()]
+   c = Crawler(
+       url = "https://books.toscrape.com/",
+   )
+   c.run()
 
 if __name__ == "__main__":
     main()

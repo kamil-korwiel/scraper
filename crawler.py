@@ -39,26 +39,51 @@ class Crawler:
     start_url: str
     deep_limit: int
     grap_url: dict[str : list[str]]
-    url_in_process: set
+    know_url: set = set()
 
-    def __init__(self, url:str, deep_limit:int=2) -> None:
+    def __init__(self, url:str, deep_limit:int=1) -> None:
         self.start_url = url
         self.deep_limit = deep_limit
 
     def run(self):
-        pass
+        self._get_by_bfs()
+
+    def _filter(self, new_url: list[str]):
+        new_no_repeted_url = set(new_url)
+        return new_no_repeted_url.difference(self.know_url)
+
+       
             
     def _get_by_bfs(self):
         que:Queue[str] = Queue() #FIFO
         que.put((self.start_url, 0))
         while not que.empty():
-            current_url, current_deep = que.get()    
-            if current_deep > self.deep_limit:
-                break
-                
-            list_links = get_links(current_url)
-            ###############FILTER###################
+            current_url, current_deep = que.get()
+            print(current_url)
            
-            for link in list_links:
-                que.put(link, current_deep + 1)
-            
+            list_links = get_links(current_url)
+            if current_deep + 1 > self.deep_limit:
+                    print("BREAK")
+                    break    
+            print(f"How moach scraped: {len(list_links)}")
+            ############### FILTER ###################
+            filtered_url = list(self._filter(list_links))
+            ############### ADD ###################
+            for link in filtered_url:
+                que.put((link, current_deep + 1))
+    
+   
+    def info_when_end():
+        # co zostało w kolejce
+        # jaki czas wymagał program
+        pass
+
+
+
+class AsyncCrawler:
+    que:Queue[str] = Queue() 
+
+    def node(self,url:str):
+        links = get_links(url)
+        for l in links: 
+            self.que.put(l)
